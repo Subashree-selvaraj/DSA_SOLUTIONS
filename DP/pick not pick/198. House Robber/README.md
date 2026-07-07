@@ -36,33 +36,35 @@ Total amount you can rob = 2 + 9 + 1 = 12.
 
 ## Approach 1 (Dynamic Programming)
 ### Intuition
-Imagine you are a thief trying to rob houses in a row. The goal is to maximize the total amount stolen without robbing adjacent houses. This problem can be broken down into smaller sub-problems, where for each house, you have two options: either rob it or don't. The decision to rob a house depends on the maximum amount you can get from the previous houses. This intuition leads us to use dynamic programming to solve the problem.
+The House-Robber problem can be solved using dynamic programming, which is an approach that breaks down complex problems into simpler sub-problems. The core idea here is to think of the problem as a series of decisions: at each house, you have to decide whether to rob it or not. The decision to rob or not rob a house depends on the maximum amount you can get from the previous houses. The intuition is similar to a real-world scenario where you're trying to maximize your earnings by making optimal decisions at each step, considering the constraints (in this case, not being able to rob adjacent houses).
 
 ### Approach
-The approach involves creating a dynamic programming (DP) array, `dp`, where `dp[i]` represents the maximum amount that can be stolen up to the `i-th` house. We start by initializing the first two elements of the DP array: `dp[0]` is the amount in the first house, and `dp[1]` is the maximum of the amounts in the first and second houses. Then, for each house from the third house onwards, we have two options: either rob the current house (in which case we add its amount to `dp[i-2]`) or don't rob it (in which case we take `dp[i-1]`). We choose the option that gives us the maximum amount.
+The approach involves initializing variables to keep track of the maximum amount that can be robbed up to the current house. We start by checking the base case (if there's only one house), and then we initialize `prev2` and `prev1` to keep track of the maximum amount we can get by not robbing the current house and the maximum amount we can get including the current house, respectively. We then iterate through the rest of the houses, at each step calculating the maximum amount we can get by either robbing the current house (`pick`) or not robbing it (`notPick`), and update `prev2` and `prev1` accordingly.
 
 ### Code
 ```java
 int n = nums.length;
-if (n == 1) {
+if (n == 1)
     return nums[0];
-}
-int[] dp = new int[n];
-dp[0] = nums[0];
-dp[1] = Math.max(nums[1], nums[0]);
+
+int prev2 = nums[0];
+int prev1 = Math.max(nums[0], nums[1]);
+
 for (int i = 2; i < n; i++) {
-    int pick = nums[i] + dp[i - 2];
-    int notPick = dp[i - 1];
-    dp[i] = Math.max(pick, notPick);
+    int pick = nums[i] + prev2;
+    int notPick = prev1;
+    int curr = Math.max(pick, notPick);
+    prev2 = prev1;
+    prev1 = curr;
 }
-return dp[n - 1];
+return prev1;
 ```
 
 ### Complexity
-- Time: O(n), where n is the number of houses. We are iterating through the array once.
-- Space: O(n), as we are using an array of size n to store the DP values.
+- Time: O(n), where n is the number of houses. This is because we make a single pass through the array of houses.
+- Space: O(1), since we only use a constant amount of space to store our variables, regardless of the input size.
 
 ## 🕵️‍♂️ Follow-up Questions (Optional)
-Some common follow-up questions for this problem include:
-1. **What if the houses are arranged in a circle?** In this case, the problem becomes more complex because we have to consider the constraint that we cannot rob the first and last houses simultaneously. We would need to solve the problem for two cases: one where we rob the first house and one where we don't, and then return the maximum of these two cases.
-2. **How would you optimize the space complexity?** We can optimize the space complexity by observing that we only need to keep track of the last two houses' maximum amounts. Therefore, we can use two variables instead of an array of size n, reducing the space complexity to O(1).
+Some common follow-up questions for this pattern could include:
+1. **What if the houses are arranged in a circle?** In this case, the problem becomes slightly more complex because robbing the first house would limit your ability to rob the last house. The solution involves considering two cases: one where the first house is robbed and one where it is not.
+2. **How would you handle an array with negative numbers or zeros?** The dynamic programming approach can handle negative numbers and zeros without any adjustments, as the `Math.max` function will correctly choose the maximum value between the current maximum and the new calculated value, regardless of whether the new value is negative or zero.
