@@ -42,20 +42,23 @@
 
 ## Approach 1 (Kadane's Algorithm)
 ### Intuition
-Imagine you're on a hike, and you want to find the longest stretch of trail where the elevation gain is the greatest. You can think of each step as either adding to your current elevation gain or starting over from the current point. If your current elevation gain is negative, it's better to start over. This intuition is the core of Kadane's algorithm, which is used to solve the Maximum Subarray problem. It works by maintaining a running sum of the current subarray and resetting it whenever it becomes negative.
+Imagine you're on a hike, and your goal is to find the most scenic part of the trail with the best views. However, the trail has ups and downs, representing positive and negative elevation changes. You want to find the section of the trail with the maximum cumulative elevation gain. If the current section has a negative cumulative elevation change, it's better to start fresh from the next point, as the negative change would only drag down the overall gain. This approach works by maintaining a running sum of the elevations (or subarray elements) and resetting it whenever it becomes negative.
 
 ### Approach
-The algorithm starts by initializing two variables: one to keep track of the maximum sum found so far (`maxSum`), and another to keep track of the current sum (`currentSum`). It then iterates through the array, at each step adding the current element to `currentSum`. If `currentSum` becomes greater than `maxSum`, it updates `maxSum`. If `currentSum` becomes negative, it resets `currentSum` to 0, effectively starting a new subarray. This process continues until all elements have been processed.
+The algorithm, known as Kadane's Algorithm, works as follows:
+1. Initialize two variables, `currentSum` and `maxSum`, to keep track of the current subarray sum and the maximum sum found so far, respectively.
+2. Iterate through the array. For each element, add it to `currentSum`.
+3. Update `maxSum` if `currentSum` is greater.
+4. If `currentSum` becomes negative, reset it to 0, as a negative sum has no benefit in finding the maximum subarray sum.
 
 ### Detailed Code Analysis
-Let's break down the code:
-- `int currentSum=0;` initializes the current sum to 0.
-- `int maxSum=Integer.MIN_VALUE;` initializes the maximum sum found so far to the smallest possible integer value. This ensures that any sum will be greater than `Integer.MIN_VALUE`.
-- The `for (int x:nums)` loop iterates through each element `x` in the input array `nums`.
-- Inside the loop, `currentSum+=x;` adds the current element to the current sum.
-- `maxSum=Math.max(maxSum,currentSum);` updates `maxSum` if `currentSum` is greater.
-- The `if (currentSum<0)` condition checks if the current sum is negative. If it is, `currentSum=0;` resets the current sum to 0, effectively starting a new subarray.
-- Finally, `return maxSum;` returns the maximum sum found.
+Let's dive into the provided code:
+- `int currentSum=0;` : Initializes the running sum of the subarray to 0.
+- `int maxSum=Integer.MIN_VALUE;` : Initializes the maximum sum found so far to the smallest possible integer value, ensuring that any sum will be greater than this initial value.
+- The `for` loop iterates through each element `x` in the input array `nums`.
+- `currentSum+=x;` : Adds the current element to the running sum.
+- `maxSum=Math.max(maxSum,currentSum);` : Updates `maxSum` if the current running sum is greater.
+- `if (currentSum<0) { currentSum=0; }` : Resets the running sum to 0 if it becomes negative, effectively starting a new subarray from the next element.
 
 ### Code
 ```java
@@ -74,10 +77,11 @@ class Solution {
     }
 }
 ```
+
 ### Complexity
-- Time: O(n), where n is the number of elements in the input array, because we're making a single pass through the array.
-- Space: O(1), because we're using a constant amount of space to store our variables (`currentSum` and `maxSum`), regardless of the input size.
+- Time: O(n), where n is the number of elements in the input array. This is because we perform a single pass through the array.
+- Space: O(1), as we use a constant amount of space to store the variables `currentSum` and `maxSum`, regardless of the input size.
 
 ## 🕵️‍♂️ Follow-up Questions (Optional)
-1. **What if the input array is empty?** In this implementation, `maxSum` would remain `Integer.MIN_VALUE`, which is the correct result for an empty array since there's no subarray to sum. However, depending on the problem's requirements, you might need to handle this case differently.
-2. **How would you find the actual subarray that gives the maximum sum, not just the sum itself?** To do this, you'd need to keep track of the start and end indices of the subarray that gives the current `maxSum`. You could do this by introducing additional variables to track these indices whenever `maxSum` is updated.
+1. **What if the input array is empty?** The code will return `Integer.MIN_VALUE`, indicating that no maximum subarray sum was found. To handle this case, you could add a check at the beginning of the function to return 0 (or throw an exception, depending on the requirements).
+2. **Can this algorithm be applied to other similar problems?** Yes, variations of Kadane's Algorithm can be used to solve other problems involving cumulative sums or maximum/minimum subarray sums with additional constraints.
