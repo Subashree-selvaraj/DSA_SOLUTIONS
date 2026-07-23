@@ -49,46 +49,45 @@ The 2<sup>nd</sup> largest integer in nums is "0".
 
 # 🛍️ Find-the-Kth-Largest-Integer-in-the-Array | Explained
 
-## Approach 1: Incomplete Sorting Approach
+## Approach 1: Custom Sorting
 ### Intuition
-The core idea behind this approach is to sort the array of strings representing integers based on their lengths and then lexicographically. This approach works because it first compares the lengths of the strings, and if the lengths are different, it sorts them based on their lengths. However, the provided code snippet seems incomplete and doesn't fully implement this idea.
+This approach works by first sorting the array of strings representing integers in descending order. The sorting is done in a way that first compares the lengths of the strings (to handle numbers of different magnitudes) and then compares the strings lexicographically (to handle numbers of the same magnitude). This ensures that the sorting is done in a way that larger numbers come before smaller numbers. The intuition behind this approach can be thought of as sorting a list of numbers written in words (e.g., "one", "two", "three") where the length of the word (number of letters) and then the alphabetical order are considered.
+
+### Algorithm Visualized
+Since the algorithm primarily involves sorting, it can be visualized as a process of arranging elements in an array from largest to smallest based on a custom comparison rule. There isn't a specific Mermaid diagram that directly illustrates the sorting logic in a concise manner without becoming overly complex or simplistic, so we'll proceed directly to the approach and code analysis.
 
 ### Approach
-The high-level logic flow of this approach involves:
-1. Sorting the array of strings based on their lengths and lexicographical order.
-2. After sorting, the kth largest number can be found at the index `nums.length - k`.
+1. The approach starts by defining a custom sorting rule for the array of strings.
+2. It sorts the array based on this custom rule, which prioritizes the length of the strings (longer strings represent larger numbers) and then their lexicographical order.
+3. After sorting, it selects the `kth` element from the end of the sorted array, which corresponds to the `kth` largest number.
 
 ### Detailed Code Analysis
-The code provided attempts to sort the array `nums` using `Arrays.sort()` with a custom comparator. The comparator checks if the lengths of two strings `a` and `b` are different, and if so, it returns the difference between their lengths. However, there are several issues with this code:
-- The return statement is incorrect and incomplete. It should return an integer value indicating the result of the comparison.
-- The code is missing the lexicographical comparison when the lengths of `a` and `b` are equal.
-- The variable `a` is not defined in the return statement.
+- Line 1: `class Solution {` declares a class named `Solution` which will contain the method to solve the problem.
+- Line 2: `public String kthLargestNumber(String[] nums, int k) {` defines a public method `kthLargestNumber` that takes an array of strings `nums` and an integer `k` as parameters and returns a string.
+- Line 3: `Arrays.sort(nums,(a,b)->{` initiates the sorting of the `nums` array with a custom comparator.
+- Lines 4-6: `if(a.length()!=b.length()){ return a.length()-b.length(); }` compares the lengths of two strings `a` and `b`. If they are of different lengths, it returns the difference. This implies that longer strings (which represent larger numbers in this context) will come first in the sorted array.
+- Line 8: `return a.compareTo(b);` if the lengths of `a` and `b` are the same, it compares them lexicographically (alphabetically). This ensures that within numbers of the same magnitude (length), they are sorted in descending order.
+- Line 10: `return nums[nums.length-k];` returns the `kth` element from the end of the sorted array, which is the `kth` largest number.
 
 ### Code
 ```java
 class Solution {
     public String kthLargestNumber(String[] nums, int k) {
-        Arrays.sort(nums, (a, b) -> {
-            if (a.length() != b.length()) {
-                return b.length() - a.length(); // sort in descending order of length
-            } else {
-                return b.compareTo(a); // sort in descending lexicographical order
+        Arrays.sort(nums,(a,b)->{
+            if(a.length()!=b.length()){
+                return a.length()-b.length();
             }
+            return a.compareTo(b);
         });
-        return nums[k - 1]; // return the kth largest number
+        return  nums[nums.length-k];
     }
 }
 ```
 
 ### Complexity
-- **Time:** The time complexity of this approach is O(n log n) due to the sorting operation, where n is the length of the input array `nums`.
-- **Space:** The space complexity is O(1) if the sorting is done in-place, or O(n) if a new array is created for sorting.
+- **Time:** The time complexity of this solution is O(n log n) due to the sorting operation, where n is the number of strings in the input array. The custom comparator within the sorting does not change the overall time complexity of the sorting algorithm.
+- **Space:** The space complexity is O(1) if we consider the input array as part of the space requirement and assume that the sorting is done in-place. However, if we consider the need for additional space used during the sorting process (which can vary depending on the sorting algorithm implementation), it could be O(n) in the worst case for algorithms like merge sort, but typically, Java's `Arrays.sort()` for primitives and objects uses a variant of dual pivot quicksort for primitives and TimSort for objects, both of which have an average and worst-case space complexity of O(log n) due to the recursion stack.
 
-## Approach 2: Not Applicable
-There is only one approach present in the provided code snippet, and it is incomplete. However, the corrected version of this approach is presented above.
-
-## 🕵️‍♂️ Follow-up Questions (Optional)
-1. How would you optimize this solution if the input array is very large and doesn't fit into memory?
- Answer: You could use a heap data structure to store the top k largest numbers, and then iterate through the input array to find the kth largest number. This approach would have a time complexity of O(n log k) and a space complexity of O(k).
-2. How would you handle the case where there are duplicate numbers in the input array?
- Answer: The provided solution already handles duplicate numbers correctly, as it compares the lengths of the strings first and then their lexicographical order. If two numbers have the same length and value, they would be considered equal and their order in the sorted array would be determined by their original order in the input array.
+## 🕵️‍♂️ Follow-up Questions
+1. **What if there are duplicate numbers in the array?** The current implementation treats duplicate numbers based on their string representation. If two numbers are the same, their order after sorting will depend on their original order in the input array due to the stability of the sorting algorithm used by Java.
+2. **How would you optimize this solution for very large input arrays?** For very large input arrays, using a more efficient sorting algorithm or leveraging the fact that we only need the `kth` largest element (potentially using a heap or a partial sorting approach) could provide significant performance improvements.
