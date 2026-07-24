@@ -52,59 +52,70 @@ Right sum = nums[1] + nums[2] = 1 + -1 = 0
 
 # 🛍️ Find-Pivot-Index | Explained
 
-## Approach 1 (e.g., Prefix Sum Approach)
+## Approach 1: Two-Pass Solution with Prefix Sum Concept
 ### Intuition
-The core idea behind this approach is to use the concept of prefix sums to efficiently calculate the sum of elements to the left and right of each index. The prefix sum array is similar to a running total, where each element at index `i` represents the sum of all elements from index `0` to `i`. This approach works because it allows us to calculate the sum of elements to the left and right of each index in constant time, making the overall time complexity linear. Think of it like a financial ledger where you keep a running total of your expenses, making it easy to calculate the total expenses up to a certain point.
+The core idea behind this approach is to find the total sum of the array and then for each element, calculate the sum of elements to its left and right. If the left sum equals the right sum, that index is the pivot index. This approach works by essentially treating each element as a potential pivot and checking if the sums on either side are balanced.
+
+### Algorithm Visualized
+```mermaid
+graph LR
+    A[Start] --> B[Calculate Total Sum]
+    B --> C[Initialize Left Sum]
+    C --> D[Iterate Through Array]
+    D --> E[Calculate Right Sum]
+    E --> F[Check if Left Sum == Right Sum]
+    F -->|Yes| G[Return Index]
+    F -->|No| D
+    D -->|End of Array| H[Return -1]
+```
 
 ### Approach
-The algorithm can be broken down into the following steps:
-1. Calculate the prefix sum array for the input array.
-2. Iterate through each index in the input array.
-3. For each index, calculate the sum of elements to the left and right.
-4. Check if the left sum equals the right sum. If it does, return the current index.
-5. If no such index is found, return -1.
+The algorithm starts by calculating the total sum of the input array. Then, it iterates through the array, maintaining a running sum of elements to the left of the current index. For each index, it calculates the sum of elements to the right by subtracting the left sum and the current element from the total sum. If the left sum equals the right sum, it returns the current index as the pivot index. If no such index is found after iterating through the entire array, it returns -1 to indicate that no pivot index exists.
 
 ### Detailed Code Analysis
-Let's take a closer look at the code:
-- `int n = nums.length;` This line initializes a variable `n` to store the length of the input array `nums`.
-- `int[] prefix = new int[n];` This line creates a new array `prefix` of the same length as the input array `nums`. This array will store the prefix sums.
-- `prefix[0] = nums[0];` This line initializes the first element of the `prefix` array to the first element of the `nums` array. This is because the prefix sum at index `0` is simply the value at index `0`.
-- The `for` loop from line 8 to 10 calculates the prefix sums for the rest of the array. `prefix[i] = prefix[i - 1] + nums[i];` This line calculates the prefix sum at index `i` by adding the current element `nums[i]` to the previous prefix sum `prefix[i - 1]`.
-- `int total = prefix[n - 1];` This line calculates the total sum of the input array by taking the last element of the `prefix` array.
-- The second `for` loop from line 14 to 21 iterates through each index in the input array and checks if it's a pivot index.
-- `int leftSum = (i == 0) ? 0 : prefix[i - 1];` This line calculates the sum of elements to the left of the current index. If the current index is `0`, the left sum is `0`.
-- `int rightSum = total - prefix[i];` This line calculates the sum of elements to the right of the current index by subtracting the current prefix sum from the total sum.
-- The `if` statement from line 19 to 20 checks if the left sum equals the right sum. If it does, the function returns the current index.
+The code begins by initializing a variable `total` to 0, which will store the total sum of the array. It then iterates through the array to calculate this sum, adding each element to `total`.
+```java
+int total = 0;
+for (int i = 0; i < nums.length; i++) {
+    total = total + nums[i];
+}
+```
+Next, it initializes `leftSum` to 0, representing the sum of elements to the left of the current index. It then iterates through the array again, calculating `rightSum` for each index `i` by subtracting `leftSum` and `nums[i]` from `total`. If `leftSum` equals `rightSum`, it returns `i` as the pivot index.
+```java
+int leftSum = 0;
+for (int i = 0; i < nums.length; i++) {
+    int rightSum = total - leftSum - nums[i];
+    if (leftSum == rightSum) {
+        return i;
+    }
+    leftSum = leftSum + nums[i];
+}
+```
+If the loop completes without finding a pivot index, it returns -1.
 
 ### Code
 ```java
-int n = nums.length;
-int[] prefix = new int[n];
-prefix[0] = nums[0];
-
-for (int i = 1; i < n; i++) {
-    prefix[i] = prefix[i - 1] + nums[i];
+public int pivotIndex(int[] nums) {
+    int total = 0;
+    for (int i = 0; i < nums.length; i++) {
+        total = total + nums[i];
+    }
+    int leftSum = 0;
+    for (int i = 0; i < nums.length; i++) {
+        int rightSum = total - leftSum - nums[i];
+        if (leftSum == rightSum) {
+            return i;
+        }
+        leftSum = leftSum + nums[i];
+    }
+    return -1;
 }
-
-int total = prefix[n - 1];
-
-for (int i = 0; i < n; i++) {
-    int leftSum = (i == 0) ? 0 : prefix[i - 1];
-    int rightSum = total - prefix[i];
-
-    if (leftSum == rightSum)
-        return i;
-}
-return -1;
 ```
 
 ### Complexity
-- Time: The time complexity is O(n), where n is the length of the input array. This is because we're doing two passes through the array: one to calculate the prefix sums and another to find the pivot index.
-- Space: The space complexity is O(n), where n is the length of the input array. This is because we're using an additional array of the same length to store the prefix sums.
+- **Time:** O(n), where n is the number of elements in the input array. This is because the algorithm makes two passes through the array: one to calculate the total sum and another to find the pivot index.
+- **Space:** O(1), excluding the space needed for the input and output, as the algorithm uses a constant amount of space to store the total sum and the left sum.
 
-## 🕵️‍♂️ Follow-up Questions (Optional)
-Some common follow-up questions for this pattern could be:
-1. What if the input array is empty? How would you handle this edge case?
-   - The current implementation would return -1 for an empty array, which is a reasonable behavior. However, you could also consider throwing an exception or returning a specific value to indicate that the input is invalid.
-2. Can you optimize the space complexity of the solution?
-   - Yes, it's possible to optimize the space complexity to O(1) by calculating the total sum first and then iterating through the array, keeping track of the left sum and updating the right sum accordingly. This would eliminate the need for the prefix sum array.
+## 🕵️‍♂️ Follow-up Questions
+1. **What if the input array is empty or contains a single element?** The algorithm will return -1 for an empty array or 0 for an array with a single element, as there is no pivot index in these cases.
+2. **Can there be multiple pivot indices in an array?** No, according to the problem definition, there can be at most one pivot index. If there are multiple such indices, the algorithm will return the first one it encounters.
