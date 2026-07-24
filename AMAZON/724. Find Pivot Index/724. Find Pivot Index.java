@@ -1,23 +1,23 @@
 1class Solution {
 2    public int pivotIndex(int[] nums) {
-3        int n = nums.length;
+3        int total = 0;
 4
-5        int[] prefix = new int[n];
-6        prefix[0] = nums[0];
-7
-8        for (int i = 1; i < n; i++) {
-9            prefix[i] = prefix[i - 1] + nums[i];
-10        }
+5        // Find total sum
+6        for (int i = 0; i < nums.length; i++) {
+7            total = total + nums[i];
+8        }
+9
+10        int leftSum = 0;
 11
-12        int total = prefix[n - 1];
+12        for (int i = 0; i < nums.length; i++) {
 13
-14        for (int i = 0; i < n; i++) {
+14            int rightSum = total - leftSum - nums[i];
 15
-16            int leftSum = (i == 0) ? 0 : prefix[i - 1];
-17            int rightSum = total - prefix[i];
-18
-19            if (leftSum == rightSum)
-20                return i;
+16            if (leftSum == rightSum) {
+17                return i;
+18            }
+19
+20            leftSum = leftSum + nums[i];
 21        }
 22
 23        return -1;
