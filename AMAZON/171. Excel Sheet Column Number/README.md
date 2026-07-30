@@ -47,48 +47,48 @@ AB -&gt; 28
 
 # 🛍️ Excel-Sheet-Column-Number | Explained
 
-## Approach 1 (Optimized)
+## Approach 1: Base-26 Conversion
 ### Intuition
-The given problem can be thought of as converting a number system with base 26 to decimal. The Excel column labels can be considered as a base-26 number system where 'A' represents 1, 'B' represents 2, and so on, up to 'Z' which represents 26. The intuition behind this approach is similar to how we convert a decimal number to another base. However, in this case, we are converting from base-26 to decimal. The conversion process involves multiplying the current result by the base and then adding the value of the current digit.
+The Excel-Sheet-Column-Number problem can be solved by treating the column title as a base-26 number, where each character represents a digit in this base-26 system. For example, 'A' represents 1, 'B' represents 2, and so on. This approach works because the problem essentially asks us to convert a base-26 number (the column title) to a decimal number (the column number). A real-world analogy for this approach is converting a number from one base system to another, such as converting a hexadecimal number to decimal.
+
+### Algorithm Visualized
+```mermaid
+graph LR
+    A[Column Title] -->|Base-26 to Decimal|> B[Column Number]
+    B -->|Result|> C[Output]
+```
 
 ### Approach
-The algorithmic steps for this approach are as follows:
-1. Initialize a variable to store the result.
-2. Iterate over each character in the input string from left to right.
-3. For each character, convert it to its corresponding numerical value ('A' = 1, 'B' = 2, ..., 'Z' = 26).
-4. Multiply the current result by 26 and add the numerical value of the current character.
-5. Repeat steps 2-4 until all characters have been processed.
-6. Return the final result as the decimal equivalent of the input Excel column label.
+The approach involves iterating over each character in the column title, converting it to its corresponding base-26 value, and then using this value to calculate the decimal equivalent of the base-26 number. The calculation involves multiplying the current decimal value by 26 (the base) and adding the new base-26 digit value.
 
 ### Detailed Code Analysis
-Let's break down the given code:
-- `long ans = 0;` initializes a variable `ans` to store the result. A `long` data type is used to handle large values that may exceed the range of an `int`.
-- `for (int i = 0; i < columnTitle.length(); i++)` iterates over each character in the input string.
-- `char ch = columnTitle.charAt(i);` retrieves the current character.
-- `ans = ans * 26 + (ch - 'A' + 1);` is the core step where the conversion happens. It multiplies the current result `ans` by 26 (the base) and adds the value of the current character. The expression `ch - 'A' + 1` converts the character to its corresponding numerical value. For example, if `ch` is 'A', `ch - 'A'` equals 0, and adding 1 gives 1, which is the numerical value for 'A'.
-- `return (int) ans;` returns the final result as an `int`. This is safe because the problem statement guarantees that the result will not exceed the range of an `int`, even though the intermediate calculations might.
+The provided code implements this approach as follows:
+- Line 5: `int ans = 0;` initializes a variable `ans` to store the decimal equivalent of the column title. It starts at 0 because we haven't processed any characters yet.
+- Line 7: `for (int i = 0; i < columnTitle.length(); i++)` iterates over each character in the column title.
+- Line 9: `char ch = columnTitle.charAt(i);` retrieves the current character being processed.
+- Line 11: `int value = ch - 'A' + 1;` converts the character to its base-26 value. This works because the ASCII values of 'A' to 'Z' are consecutive, so subtracting 'A' gives us a value starting from 0, and adding 1 shifts the range to start from 1, which is what we need for base-26 conversion.
+- Line 13: `ans = ans * 26 + value;` updates the decimal equivalent by multiplying the current value by 26 (to shift the digits to the left, making space for the new digit) and adding the new digit's value.
+- Line 16: `return ans;` returns the calculated decimal equivalent of the column title.
 
 ### Code
 ```java
-class Solution {
-    public int titleToNumber(String columnTitle) {
-        long ans = 0;
-        for (int i = 0; i < columnTitle.length(); i++) {
-            char ch = columnTitle.charAt(i);
-            ans = ans * 26 + (ch - 'A' + 1);
-        }
-        return (int) ans;
+public int titleToNumber(String columnTitle) {
+    int ans = 0;
+    for (int i = 0; i < columnTitle.length(); i++) {
+        char ch = columnTitle.charAt(i);
+        int value = ch - 'A' + 1;
+        ans = ans * 26 + value;
     }
+    return ans;
 }
 ```
 
 ### Complexity
-- Time: The time complexity is O(n), where n is the length of the input string `columnTitle`. This is because we are iterating over each character in the string once.
-- Space: The space complexity is O(1), which means the space required does not change with the size of the input string. This is because we are using a constant amount of space to store our variables, regardless of the input size.
+- **Time:** O(n), where n is the length of the column title. This is because we iterate over each character in the title once.
+- **Space:** O(1), which means the space required does not change with the size of the input. This is because we use a constant amount of space to store the result and the loop variables, regardless of the input size.
 
 ## 🕵️‍♂️ Follow-up Questions (Optional)
-1. **How would you handle the case where the input string is empty or null?**  
-   You should add a check at the beginning of the method to return an appropriate value (e.g., 0 or throw an exception) for these cases, as they are not valid Excel column labels.
-
-2. **Can you extend this solution to handle Excel column labels that are not limited to 26 characters (e.g., 'ZZZ' or longer)?**  
-   The given solution already handles such cases. It treats the Excel column label as a base-26 number and converts it to decimal, which inherently supports labels of any length, not just limited to 'Z' or 'ZZ'.
+1. **What if the input string is empty or null?** 
+   Answer: The current implementation does not handle these cases explicitly. Adding a check at the beginning of the function to return an appropriate value (e.g., 0 for an empty string) or throw an exception for null input would make the solution more robust.
+2. **How would you optimize this solution for very large input strings?** 
+   Answer: For very large input strings, the current solution is already efficient because it only requires a single pass through the string. However, one potential optimization could involve using a more efficient data type for `ans` if the language supports arbitrary-precision arithmetic, to handle cases where the result exceeds the maximum value that can be represented by an `int`.
