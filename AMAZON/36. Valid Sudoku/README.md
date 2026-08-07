@@ -61,102 +61,68 @@
 
 # 🛍️ Valid-Sudoku | Explained
 
-## Approach 1: Hashing-Based Approach
+## Approach 1: Iterative Sudoku Validation
 ### Intuition
-The core idea behind this approach is to utilize hashing to keep track of the numbers that have been encountered in each row, column, and 3x3 sub-box. This approach works by iterating over the Sudoku board and marking the presence of each number in its corresponding row, column, and sub-box. If a duplicate number is found, the function immediately returns false, indicating that the Sudoku board is not valid.
+The provided code uses an iterative approach to validate a Sudoku puzzle. The core idea is to iterate over each cell in the Sudoku grid, checking if the current number already exists in the same row, column, or 3x3 sub-box. This approach works by ensuring that each number from 1 to 9 appears only once in each row, column, and sub-box, which is the fundamental rule of Sudoku.
 
 ### Algorithm Visualized
 ```mermaid
 graph LR
-    A[Start] --> B[Initialize Hash Tables]
-    B --> C[Iterate Over Board]
-    C --> D[Check for Duplicates]
-    D -->|Yes| E[Return False]
-    D -->|No| F[Mark Presence]
-    F --> C
-    C -->|End of Board| G[Return True]
+    A[Start] --> B[Initialize Arrays]
+    B --> C[Iterate Over Grid]
+    C --> D[Check Row, Column, and Sub-box]
+    D --> E[Update Flags]
+    E --> F[Return False if Duplicate Found]
+    E --> C
+    C --> G[Return True if Grid is Valid]
 ```
 
 ### Approach
-The algorithm starts by initializing three 2D boolean arrays to represent the rows, columns, and sub-boxes. It then iterates over each cell in the Sudoku board. If the cell is empty (i.e., '.'), it skips to the next cell. Otherwise, it calculates the index of the sub-box and checks if the number has been encountered before in the current row, column, or sub-box. If a duplicate is found, it returns false. If not, it marks the presence of the number in the corresponding hash tables.
+The algorithm starts by initializing three 2D arrays (or matrices) to keep track of the numbers found in each row, column, and sub-box. It then iterates over each cell in the Sudoku grid. For each cell, it checks if the current number already exists in the same row, column, or sub-box by looking up the corresponding flags in the arrays. If a duplicate is found, the function immediately returns False. If no duplicates are found after checking all cells, the function returns True, indicating that the Sudoku puzzle is valid.
 
 ### Detailed Code Analysis
-The code starts by initializing three 2D boolean arrays `rowHasNumber`, `colHasNumber`, and `subBoxHasNumber` to keep track of the numbers that have been encountered in each row, column, and sub-box, respectively.
+The code provided is a part of the iterative validation approach. It seems to be checking if a given digit already exists in the current row, column, or sub-box. The specific lines of code are:
 ```java
-boolean[][] rowHasNumber = new boolean[9][9];
-boolean[][] colHasNumber = new boolean[9][9];
-boolean[][] subBoxHasNumber = new boolean[9][9];
-```
-The code then iterates over each cell in the Sudoku board using two nested for loops.
-```java
-for (int row = 0; row < 9; row++) {
-    for (int col = 0; col < 9; col++) {
-        // ...
-    }
-}
-```
-Inside the loop, it checks if the current cell is empty. If it is, it skips to the next cell.
-```java
-char currentCell = board[row][col];
-if (currentCell == '.') {
-    continue;
-}
-```
-If the cell is not empty, it calculates the index of the sub-box and the digit index.
-```java
-int digitIndex = currentCell - '0' - 1;
-int subBoxIndex = (row / 3) * 3 + (col / 3);
-```
-It then checks if the number has been encountered before in the current row, column, or sub-box. If a duplicate is found, it returns false.
-```java
-if (rowHasNumber[row][digitIndex] ||
+if (rowHasNumber[row][digitIndex] || 
     colHasNumber[col][digitIndex] || 
-    subBoxHasNumber[subBoxIndex][digitIndex]) {
+    subBoxHasNumber[subBoxIndex][digitIndex]){
     return false;
 }
+rowHasNumber[row][digitIndex]=true;
+colHasNumber[col][digitIndex]=true;
+subBoxHasNumber[subBoxIndex][digitIndex]=true;
 ```
-If not, it marks the presence of the number in the corresponding hash tables.
-```java
-rowHasNumber[row][digitIndex] = true;
-colHasNumber[col][digitIndex] = true;
-subBoxHasNumber[subBoxIndex][digitIndex] = true;
-```
+Here, `rowHasNumber`, `colHasNumber`, and `subBoxHasNumber` are 2D arrays that keep track of the numbers found in each row, column, and sub-box, respectively. The indices `row`, `col`, and `subBoxIndex` are used to access the correct sub-array for the current cell, and `digitIndex` corresponds to the current number being checked (1-9).
+
 ### Code
 ```java
-class Solution {
-    public boolean isValidSudoku(char[][] board) {
-        boolean[][] rowHasNumber = new boolean[9][9];
-        boolean[][] colHasNumber = new boolean[9][9];
-        boolean[][] subBoxHasNumber = new boolean[9][9];
+public boolean isValidSudoku(char[][] board) {
+    boolean[][] rowHasNumber = new boolean[9][9];
+    boolean[][] colHasNumber = new boolean[9][9];
+    boolean[][] subBoxHasNumber = new boolean[9][9];
 
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                char currentCell = board[row][col];
-                if (currentCell == '.') {
-                    continue;
-                }
-                int digitIndex = currentCell - '0' - 1;
-                int subBoxIndex = (row / 3) * 3 + (col / 3);
-                if (rowHasNumber[row][digitIndex] ||
-                    colHasNumber[col][digitIndex] || 
-                    subBoxHasNumber[subBoxIndex][digitIndex]) {
-                    return false;
-                }
-                rowHasNumber[row][digitIndex] = true;
-                colHasNumber[col][digitIndex] = true;
-                subBoxHasNumber[subBoxIndex][digitIndex] = true;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            char digit = board[i][j];
+            if (digit == '.') {
+                continue;
             }
+            int digitIndex = digit - '1';
+            int subBoxIndex = (i / 3) * 3 + j / 3;
+            if (rowHasNumber[i][digitIndex] || 
+                colHasNumber[j][digitIndex] || 
+                subBoxHasNumber[subBoxIndex][digitIndex]){
+                return false;
+            }
+            rowHasNumber[i][digitIndex]=true;
+            colHasNumber[j][digitIndex]=true;
+            subBoxHasNumber[subBoxIndex][digitIndex]=true;
         }
-        return true;
     }
+    return true;
 }
 ```
 
 ### Complexity
-- **Time:** O(1), since the size of the Sudoku board is fixed (9x9). The algorithm iterates over each cell in the board once, resulting in a constant time complexity.
-- **Space:** O(1), since the space used does not grow with the size of the input. The algorithm uses three 2D boolean arrays of fixed size (9x9) to keep track of the numbers that have been encountered in each row, column, and sub-box.
-
-## 🕵️‍♂️ Follow-up Questions (Optional)
-Some common follow-up questions for this pattern include:
-* How would you optimize this solution for a larger Sudoku board?
-* Can you implement this solution using a different data structure, such as a hash set?
+- **Time:** O(1) because the size of the Sudoku grid is fixed (9x9), resulting in a constant number of iterations. However, if we were to consider the size of the grid as a variable (n x n), the time complexity would be O(n^2).
+- **Space:** O(1) because the size of the arrays used to track numbers is also fixed, resulting in a constant amount of memory used. Again, considering a variable-sized grid, the space complexity would be O(n^2).
