@@ -1,0 +1,1 @@
+            if (part != 0) {                String temp = convert(part);                if (!unit[i].isEmpty()) {                    temp +=   + unit[i];                }                if (ans.isEmpty()) {                    ans = temp;                } else {                    ans = temp +   + ans;                }
